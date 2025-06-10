@@ -1,0 +1,130 @@
+
+#define IN1 7    //  IN1
+#define IN2 8    //  IN2
+#define IN3 9    //  IN3
+#define IN4 10   //  IN4
+#define ENA 5    // Right Enable
+#define ENB 6    // Left  Enable
+
+#define Speed 150
+
+char value;
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+}
+
+void loop() {
+  voicecontrol();
+}
+
+void voicecontrol() {
+  if (Serial.available() > 0) {
+    value = Serial.read();
+    Serial.println(value);
+
+    if (value == '^') {
+      forward(); delay(5000); Stop();
+    } else if (value == '-') {
+      backward(); delay(1000); Stop();
+    } else if (value == '<') {
+      left(); delay(250); Stop();
+    } else if (value == '>') {
+      right(); delay(250); Stop();
+    } else if (value == '*') {
+      Stop();
+    } else if (value == '@') {
+      spin();
+    } else if (value == '#') {
+      boost(); delay(750); Stop();
+    } else if (value == '!') {
+      dance(); delay(500); Stop();
+    } else if (value == 'U') {
+      uTurn(); 
+    }
+  }
+}
+
+// forward
+void forward() {
+  digitalWrite(IN1, LOW);  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+}
+
+//  backward
+void backward() {
+  digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+}
+
+//  left
+void left() {
+  digitalWrite(IN1, LOW);  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+}
+
+//  right
+void right() {
+  digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+}
+
+// Stop
+void Stop() {
+  digitalWrite(IN1, LOW);  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);  digitalWrite(IN4, LOW);
+  analogWrite(ENA, 0);
+  analogWrite(ENB, 0);
+}
+
+// Spin
+void spin() {
+  digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+  delay(1000);
+  Stop();
+}
+
+// Boost
+void boost() {
+  digitalWrite(IN1, LOW);  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, 255);
+  analogWrite(ENB, 255);
+}
+
+// Dance
+void dance() {
+  for (int i = 0; i < 3; i++) {
+    left(); delay(200);
+    right(); delay(200);
+  }
+  Stop();
+}
+
+// U-turn: spin 180° in place
+void uTurn() {
+  digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH); 
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+  delay(600);  
+  Stop();
+}
