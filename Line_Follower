@@ -1,0 +1,106 @@
+#define MS 3      // Middle Sensor
+#define LS 2      // Left sensor
+#define RS 4      // Right sensor
+
+#define LM1 8     // left motor
+#define LM2 9     // left motor
+#define RM1 10    // right motor
+#define RM2 11    // right motor
+const int ENA=5;
+const int ENB=6;
+const int SPEED=180;
+const int TURN_SPEED = SPEED / 2;  
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(MS, INPUT);
+  pinMode(LS, INPUT);
+  pinMode(RS, INPUT);
+  pinMode(LM1, OUTPUT);
+  pinMode(LM2, OUTPUT);
+  pinMode(RM1, OUTPUT);
+  pinMode(RM2, OUTPUT);
+  pinMode(ENA, OUTPUT);  
+  pinMode(ENB, OUTPUT);
+}
+
+void loop()
+{
+  if(digitalRead(MS))     // Middle Sensor On Line
+  {
+    if(!digitalRead(LS) && !digitalRead(RS))
+    {
+      Serial.println("move forward");
+      analogWrite(ENA, SPEED);
+      analogWrite(ENB, SPEED);
+      digitalWrite(LM1, HIGH);
+      digitalWrite(LM2, LOW);
+      digitalWrite(RM1, HIGH);
+      digitalWrite(RM2, LOW);
+    }
+    else if(digitalRead(LS) && !digitalRead(RS))
+    {
+      Serial.println("Sharp Left");
+      analogWrite(ENA, TURN_SPEED);
+      analogWrite(ENB, SPEED);
+      digitalWrite(LM1, LOW);
+      digitalWrite(LM2, HIGH);
+      digitalWrite(RM1, HIGH);   
+      digitalWrite(RM2, LOW);
+    }
+    else if(!digitalRead(LS) && digitalRead(RS))
+    {
+      Serial.println("Sharp Right");
+      analogWrite(ENA, SPEED);
+      analogWrite(ENB, TURN_SPEED);
+      digitalWrite(LM1, HIGH);
+      digitalWrite(LM2, LOW);
+      digitalWrite(RM1, LOW);
+      digitalWrite(RM2, HIGH);
+    }
+    else if(digitalRead(LS) && digitalRead(RS)) 
+    {
+      analogWrite(ENA, 0);
+      analogWrite(ENB, 0);
+      digitalWrite(LM1, LOW);
+      digitalWrite(LM2, LOW);
+      digitalWrite(RM1, LOW);
+      digitalWrite(RM2, LOW);
+      Serial.println("Stop");
+    }
+  }
+  else
+  {
+    if(digitalRead(LS) && !digitalRead(RS))     
+    {
+      analogWrite(ENA, TURN_SPEED);
+      analogWrite(ENB, SPEED);
+      digitalWrite(LM1, LOW);
+      digitalWrite(LM2, HIGH);
+      digitalWrite(RM1, LOW); 
+      digitalWrite(RM2, LOW);
+      Serial.println("Left");
+    }
+    else if(!digitalRead(LS) && digitalRead(RS))     
+    {
+      analogWrite(ENA, SPEED);
+      analogWrite(ENB, TURN_SPEED);
+      digitalWrite(LM1, LOW); 
+      digitalWrite(LM2, LOW);
+      digitalWrite(RM1, LOW);
+      digitalWrite(RM2, HIGH);
+      Serial.println("Right");
+    } 
+    else if(!digitalRead(LS) && !digitalRead(RS))
+    {
+      analogWrite(ENA, 0);
+      analogWrite(ENB, 0);
+      digitalWrite(LM1, LOW);
+      digitalWrite(LM2, LOW);
+      digitalWrite(RM1, LOW);
+      digitalWrite(RM2, LOW);
+    }
+  }
+  delay(5);
+}
